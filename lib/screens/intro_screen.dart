@@ -91,31 +91,26 @@ class _IntroScreenState extends State<IntroScreen> {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              // Video paksa 9:16 tapi tetap fullscreen (center crop)
+              // Video 9:16 fullscreen, no border, overflow di-clip
               if (_initialized)
                 LayoutBuilder(
                   builder: (context, constraints) {
-                    final screenW = constraints.maxWidth;
                     final screenH = constraints.maxHeight;
-                    const targetAspect = 9.0 / 16.0;
-                    double videoW, videoH;
-                    if (screenW / screenH < targetAspect) {
-                      videoW = screenW;
-                      videoH = screenW / targetAspect;
-                    } else {
-                      videoH = screenH;
-                      videoW = screenH * targetAspect;
-                    }
-                    return Center(
-                      child: SizedBox(
-                        width: videoW,
-                        height: videoH,
-                        child: FittedBox(
-                          fit: BoxFit.cover,
-                          child: SizedBox(
-                            width: _controller.value.size.width,
-                            height: _controller.value.size.height,
-                            child: VideoPlayer(_controller),
+                    final videoW = screenH * 9.0 / 16.0;
+                    return ClipRect(
+                      child: OverflowBox(
+                        maxWidth: videoW,
+                        maxHeight: screenH,
+                        child: SizedBox(
+                          width: videoW,
+                          height: screenH,
+                          child: FittedBox(
+                            fit: BoxFit.cover,
+                            child: SizedBox(
+                              width: _controller.value.size.width,
+                              height: _controller.value.size.height,
+                              child: VideoPlayer(_controller),
+                            ),
                           ),
                         ),
                       ),
