@@ -91,15 +91,36 @@ class _IntroScreenState extends State<IntroScreen> {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              // Fullscreen video — no border, no padding
+              // Video paksa 9:16 tapi tetap fullscreen (center crop)
               if (_initialized)
-                FittedBox(
-                  fit: BoxFit.cover,
-                  child: SizedBox(
-                    width: _controller.value.size.width,
-                    height: _controller.value.size.height,
-                    child: VideoPlayer(_controller),
-                  ),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final screenW = constraints.maxWidth;
+                    final screenH = constraints.maxHeight;
+                    const targetAspect = 9.0 / 16.0;
+                    double videoW, videoH;
+                    if (screenW / screenH < targetAspect) {
+                      videoW = screenW;
+                      videoH = screenW / targetAspect;
+                    } else {
+                      videoH = screenH;
+                      videoW = screenH * targetAspect;
+                    }
+                    return Center(
+                      child: SizedBox(
+                        width: videoW,
+                        height: videoH,
+                        child: FittedBox(
+                          fit: BoxFit.cover,
+                          child: SizedBox(
+                            width: _controller.value.size.width,
+                            height: _controller.value.size.height,
+                            child: VideoPlayer(_controller),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 )
               else
                 const ColoredBox(
